@@ -4,6 +4,7 @@ import psycopg2
 class DataBasePeeker:
     # init
     def __init__(self, database, host, user, password):
+        self.name = database
         self.conn = psycopg2.connect(database=database,
                                      host=host,
                                      user=user,

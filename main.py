@@ -2,8 +2,6 @@ import asyncio
 import DataBasePeeker
 import bot
 
-MyToken = "6671282083:AAFzQbNyUq3wbwRm8UWkcbPobFn1kyZ2RbE"
-
 DataBases: dict[DataBasePeeker.DataBasePeeker, list[int]] = {}
 
 
