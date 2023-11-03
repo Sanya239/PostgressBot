@@ -4,6 +4,7 @@ import psycopg2
 class DataBasePeeker:
     # init
     def __init__(self, database, host, user, password):
+        self.database = database
         self.conn = psycopg2.connect(database=database,
                                      host=host,
                                      user=user,
@@ -20,10 +21,8 @@ class DataBasePeeker:
             crs.execute("SELECT * FROM public.\"SomeTable\"")
             f = crs.fetchone()
             print(f)
-            crs.execute("select current_timestamp - query_start as runtime, datname, usename,"+
-                        " query from pg_stat_activity where query != '<IDLE>' order by 1 desc;")
-            (state) = crs.fetchone()
-            print(state)
+            crs.execute("select * from pg_stat_activity")
+            stats = crs.fetchall()
 
         return 0
 
