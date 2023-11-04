@@ -10,10 +10,10 @@ async def CheckBases():
     while True:
         for db in DataBases.keys():
             state = db.peek()
-            if state != "ok":
+            if state == "ok":
                 print("Error")
-                await bot.Alert(dbName=db.name, users=DataBases[db])
-                await Solutions.solutions[state](name=db.name,users=DataBases[db])
+                await bot.Alert(dbName=db.database, users=DataBases[db])
+                await Solutions.solutions[state](name=db.database,users=DataBases[db])
         await asyncio.sleep(10)
 
 
