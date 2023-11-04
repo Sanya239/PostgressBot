@@ -1,8 +1,7 @@
 import asyncio
 import DataBasePeeker
 import bot
-
-MyToken = "6671282083:AAFzQbNyUq3wbwRm8UWkcbPobFn1kyZ2RbE"
+import Solutions
 
 DataBases: dict[DataBasePeeker.DataBasePeeker, list[int]] = {}
 
@@ -11,9 +10,10 @@ async def CheckBases():
     while True:
         for db in DataBases.keys():
             state = db.peek()
-            if state != 0:
+            if state != "ok":
                 print("Error")
                 await bot.Alert(dbName=db.name, users=DataBases[db])
+                await Solutions.solutions[state](name=db.name,users=DataBases[db])
         await asyncio.sleep(10)
 
 
