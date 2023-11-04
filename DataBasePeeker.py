@@ -1,20 +1,30 @@
 import psycopg2
 import datetime
 
-
 class DataBasePeeker:
+    id: int= 0
+    AllBases = []
     # init
     def __init__(self, database, host, user, password):
+        print("db id: ", DataBasePeeker.id)
+        self.bid = DataBasePeeker.id
+        print(self.bid)
+        DataBasePeeker.id+=2
+        print(self.bid)
         self.database = database
         self.max_query_time = 1
         self.max_process_time = 60
         self.longest_process = 0
         self.long_query_pids = []
         self.long_process_pids = []
-        self._conn = psycopg2.connect(database=database,
-                                      host=host,
-                                      user=user,
-                                      password=password)
+        try:
+            self._conn = psycopg2.connect(database=database,
+                                          host=host,
+                                          user=user,
+                                          password=password)
+            DataBasePeeker.AllBases.append(self)
+        except:
+            print("conn failed")
         print("Connection established")
 
     def __del__(self):
@@ -38,6 +48,7 @@ class DataBasePeeker:
             report += self.query_running_report()
             report += self.process_running_report()
             report += self.check_max_process_time()
+            print(report)
             return report
 
     def fix(self, option_code):

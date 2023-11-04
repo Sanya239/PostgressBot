@@ -5,7 +5,6 @@ import Solutions
 
 DataBases: dict[DataBasePeeker.DataBasePeeker, list[int]] = {}
 
-
 async def CheckBases():
     while True:
         for db in DataBases.keys():
@@ -13,7 +12,7 @@ async def CheckBases():
             if state == "ok":
                 print("Error")
                 await bot.Alert(dbName=db.database, users=DataBases[db])
-                await Solutions.solutions[state](name=db.database,users=DataBases[db])
+                await Solutions.solutions[state](db=db,users=DataBases[db])
         await asyncio.sleep(10)
 
 

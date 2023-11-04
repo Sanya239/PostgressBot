@@ -3,7 +3,7 @@ import asyncio
 import aiogram.utils.keyboard
 from aiogram import Bot, Dispatcher, types, filters, Router
 
-
+import DataBasePeeker
 
 MyToken = "6671282083:AAFzQbNyUq3wbwRm8UWkcbPobFn1kyZ2RbE"
 with open("users", "r") as file:
@@ -20,11 +20,11 @@ async def help(message: types.Message):
                                                                 "/bind to bind\n"
                                                                 "/start to start")
 
-
+db_test = DataBasePeeker.DataBasePeeker(1,2,3,4)
 @dispatcher.message(filters.Command(commands=["error"]))
 async def key(message: types.Message):
     # await Solutions.longSession(name="db1",users=Admins)
-    await Solutions.solutions["long session"](name="db1", users=Admins)
+    await Solutions.solutions["long session"](db=db_test, users=Admins)
 
 
 @dispatcher.message(filters.Command(commands=["bind"]))
