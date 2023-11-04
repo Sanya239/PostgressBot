@@ -9,6 +9,7 @@ class DataBasePeeker:
         self.max_query_time = 1
         self.max_process_time = 60
         self.longest_process = 0
+        self.max_long_processes = 1
         self.long_query_pids = []
         self.long_process_pids = []
         self._conn = psycopg2.connect(database=database,
@@ -20,7 +21,7 @@ class DataBasePeeker:
     def __del__(self):
         self._conn.close()
 
-# interface methods
+    # interface methods
     def peek(self):
         with self._conn.cursor() as crs:
             crs.execute("select clock_timestamp() - query_start as qruntime," +
@@ -35,6 +36,7 @@ class DataBasePeeker:
                 #print(stat)
                 self.check_query_running_time(stat)
                 self.check_process_running_time(stat)
+            report += self.overall_report()
             report += self.query_running_report()
             report += self.process_running_report()
             report += self.check_max_process_time()
@@ -76,6 +78,12 @@ class DataBasePeeker:
 
     def process_running_report(self):
         return "{} processes exceeding maximum process time\n".format(len(self.long_process_pids))
+
+    def overall_report(self):
+        if (len(self.long_process_pids) <= self.max_long_processes and
+                len(self.long_query_pids) <= self.max_long_processes):
+            return "Database stable\n"
+        return "Database failures detected"
 
     def term_long_queries(self):
         cnt = 0
