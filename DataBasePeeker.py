@@ -9,7 +9,7 @@ class DataBasePeeker:
         self.max_query_time = 1
         self.max_process_time = 60
         self.longest_process = 0
-        self.max_long_processes = 1
+        self.max_long_processes = 2
         self.long_query_pids = []
         self.long_process_pids = []
         self._conn = psycopg2.connect(database=database,
@@ -25,13 +25,15 @@ class DataBasePeeker:
     def peek(self):
         with self._conn.cursor() as crs:
             crs.execute("select clock_timestamp() - query_start as qruntime," +
-                        " clock_timestamp() - backend_start as bruntime, pid, datname, usename, query" +
+                        " clock_timestamp() - backend_start as bruntime, pid, datname, usename, query, state" +
                         " from pg_stat_activity" +
                         " where query_start is not null" +
                         " and pid <> pg_backend_pid()" +
                         " order by 1 desc;")
             stats = crs.fetchall()
             report = ""
+            self.long_query_pids = []
+            self.long_process_pids = []
             for stat in stats:
                 #print(stat)
                 self.check_query_running_time(stat)
@@ -55,17 +57,18 @@ class DataBasePeeker:
         return "current max process time is {}\n".format(self.longest_process)
 
     def check_query_running_time(self, stat):
-        self.long_query_pids = []
-        (qtime, btime, pid, datname, usename, query) = stat
+        (qtime, btime, pid, datname, usename, query, state) = stat
         process_time = qtime.total_seconds()
+        if state != 'active':
+            return
         if process_time > self.max_query_time:
             #print("LOG: query in process " + str(pid) + " is running for " + str(process_time))
             self.long_query_pids.append(pid)
 
     def check_process_running_time(self, stat):
-        self.long_process_pids = []
         self.longest_process = 0
-        (time, btime, pid, datname, usename, query) = stat
+        (time, btime, pid, datname, usename, query, state) = stat
+        #print(stat)
         process_time = btime.total_seconds()
         if process_time > self.longest_process:
             self.longest_process = process_time
@@ -83,7 +86,7 @@ class DataBasePeeker:
         if (len(self.long_process_pids) <= self.max_long_processes and
                 len(self.long_query_pids) <= self.max_long_processes):
             return "Database stable\n"
-        return "Database failures detected"
+        return "Database failures detected\n"
 
     def term_long_queries(self):
         cnt = 0
