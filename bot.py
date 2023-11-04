@@ -1,7 +1,9 @@
 import asyncio
 
+import aiogram.utils.keyboard
 from aiogram import Bot, Dispatcher, types, filters,Router
 
+import Solutions
 
 MyToken = "6671282083:AAFzQbNyUq3wbwRm8UWkcbPobFn1kyZ2RbE"
 with open("users","r") as file:
@@ -10,7 +12,9 @@ with open("users","r") as file:
 
 MyBot = Bot(MyToken)
 dispatcher: Dispatcher = Dispatcher()
-
+bb={}
+bb["print"]=print
+bb["print"](123)
 
 @dispatcher.message(filters.Command(commands=["help"]))
 async def help(message: types.Message):
@@ -18,7 +22,10 @@ async def help(message: types.Message):
                                                                "/help to get help\n"
                                                                "/bind to bind\n"
                                                                "/start to start")
-
+@dispatcher.message(filters.Command(commands=["key"]))
+async def key(message: types.Message):
+    #await Solutions.longSession(name="db1",users=Admins)
+    await Solutions.solutions["long session"](name="db1",users=Admins)
 
 @dispatcher.message(filters.Command(commands=["bind"]))
 async def bind(message: types.Message):
