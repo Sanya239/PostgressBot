@@ -10,7 +10,7 @@ class DataBasePeeker:
         print("db id: ", DataBasePeeker.id)
         self.bid = DataBasePeeker.id
         print(self.bid)
-        DataBasePeeker.id+=2
+        DataBasePeeker.id+=1
         print(self.bid)
         self.database = database
         self.max_query_time = 1

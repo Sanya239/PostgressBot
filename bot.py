@@ -21,8 +21,12 @@ async def help(message: types.Message):
                                                                 "/bind to bind\n"
                                                                 "/start to start")
 
+#насильно создаём некорректную базу
 db_test = DataBasePeeker.DataBasePeeker(1,2,3,4)
 DataBases[db_test] = Admins
+DataBasePeeker.DataBasePeeker.AllBases.append(db_test)
+
+
 @dispatcher.message(filters.Command(commands=["error"]))
 async def key(message: types.Message):
     # await Solutions.longSession(name="db1",users=Admins)
