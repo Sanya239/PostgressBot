@@ -5,6 +5,7 @@ class DataBasePeeker:
     id: int= 0
     AllBases = []
     # init
+
     def __init__(self, database, host, user, password):
         print("db id: ", DataBasePeeker.id)
         self.bid = DataBasePeeker.id
@@ -18,15 +19,20 @@ class DataBasePeeker:
         self.max_long_processes = 2
         self.long_query_pids = []
         self.long_process_pids = []
+        self.valid = True #Проверка что база данных корректна
         try:
             self._conn = psycopg2.connect(database=database,
                                           host=host,
                                           user=user,
                                           password=password)
             DataBasePeeker.AllBases.append(self)
+
         except:
             print("conn failed")
-        print("Connection established")
+            self.valid = False
+        if self.valid:
+            print("Connection established")
+
 
     def __del__(self):
         self._conn.close()

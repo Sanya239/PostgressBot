@@ -11,6 +11,7 @@ with open("users", "r") as file:
 
 MyBot = Bot(MyToken)
 dispatcher: Dispatcher = Dispatcher()
+DataBases: dict[DataBasePeeker.DataBasePeeker, list[int]] = {}
 
 import Solutions
 @dispatcher.message(filters.Command(commands=["help"]))
@@ -21,6 +22,7 @@ async def help(message: types.Message):
                                                                 "/start to start")
 
 db_test = DataBasePeeker.DataBasePeeker(1,2,3,4)
+DataBases[db_test] = Admins
 @dispatcher.message(filters.Command(commands=["error"]))
 async def key(message: types.Message):
     # await Solutions.longSession(name="db1",users=Admins)
@@ -29,7 +31,25 @@ async def key(message: types.Message):
 
 @dispatcher.message(filters.Command(commands=["bind"]))
 async def bind(message: types.Message):
-    await MyBot.send_message(chat_id=message.from_user.id, text="Nothing to bind")
+    bi, database, host, user, password = [None]*5
+    try:
+        bi,database, host, user, password = message.text.split("\n")
+    except:
+        await MyBot.send_message(chat_id=message.from_user.id, text="Incorrect input for command bind")
+        pass
+    for bd in DataBases.keys():
+        if bd.database == database:
+            DataBases[bd].append(message.from_user.id)
+            await MyBot.send_message(chat_id=message.from_user.id, text="bind succeed")
+            pass
+    #TODO тут надо сделать чтобы не падало на некорректных данных
+    new_db = DataBasePeeker.DataBasePeeker(database, host, user, password)
+    if new_db.valid:
+        DataBases[new_db] = [message.from_user.id]
+        await MyBot.send_message(chat_id=message.from_user.id, text="bind succeed")
+    else:
+        await MyBot.send_message(chat_id=message.from_user.id, text="Database not found")
+
 
 
 @dispatcher.message(filters.CommandStart())
